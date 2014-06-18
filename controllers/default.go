@@ -13,7 +13,7 @@ import (
 )
 
 const (
-    TOKEN    = ""
+    TOKEN    = "yiiliwechattoken"
     Text     = "text"
     Location = "location"
     Image    = "image"
@@ -63,17 +63,19 @@ type MainController struct {
 
 func (this *MainController) Get() {
     signature := this.Input().Get("signature")
-    beego.Info(signature)
+    beego.Info("signature:"+signature)
     timestamp := this.Input().Get("timestamp")
-    beego.Info(timestamp)
+    beego.Info("timestamp:"+timestamp)
     nonce := this.Input().Get("nonce")
-    beego.Info(nonce)
+    beego.Info("nonce:"+nonce)
     echostr := this.Input().Get("echostr")
-    beego.Info(echostr)
+    beego.Info("echostr:"+echostr)
     beego.Info(Signature(timestamp, nonce))
     if Signature(timestamp, nonce) == signature {
+        beego.Info("signature matched")
         this.Ctx.WriteString(echostr)
     } else {
+        beego.Info("signature not matched")
         this.Ctx.WriteString("")
     }
 }
