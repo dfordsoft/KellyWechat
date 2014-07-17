@@ -6,6 +6,6 @@ go:
 env:
   - TRAVIS="yes"
 install:
-  - go get github.com/missdeer/KellyBackend/controllers
+  - go get github.com/missdeer/KellyWechat/controllers
 script:
   - go get -u -v && go build -d -v .
