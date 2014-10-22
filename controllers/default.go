@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"io/ioutil"
-	"net/http"
 	"sort"
 	"strings"
 	"time"
