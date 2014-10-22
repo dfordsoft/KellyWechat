@@ -134,20 +134,67 @@ func dealwith(req *Request) (resp *Response, err error) {
 			resp.Content = HelpContent
 			return resp, nil
 		}
-		var a item
 		if userInputText == "wd" || userInputText == `微店` {
 			resp.MsgType = News
-			resp.ArticleCount = 1
+			resp.ArticleCount = 2
+			var a item
 			a.Description = `女装专卖，经典时尚大方，赶快来看看吧:)`
-			a.Title = `凯莉小姐的梦想女装店`
+			a.Title = `凯莉小姐的梦想女装店，经典时尚大方，适合都市年轻女性，赶快来吧:)`
 			a.PicUrl = "http://wd.geilicdn.com/vshop215091300-1413902752.jpg"
 			a.Url = "http://shopwd.yii.li"
 			resp.Articles = append(resp.Articles, &a)
+			var a2 item
+			a2.Description = `多款精品面膜，效果超好，输入mm看看吧:)`
+			a2.Title = `清韵诗面膜，多款精品面膜，效果超好，输入mm看看吧:)`
+			a2.PicUrl = "http://wd.geilicdn.com/vshop1015143-1413815285.jpg"
+			a2.Url = "http://wd.koudai.com/s/1015143"
+			resp.Articles = append(resp.Articles, &a2)
+
 			resp.FuncFlag = 1
 			return resp, nil
 		}
+		if userInputText == "mm" || userInputText == `面膜` {
+			resp.MsgType = News
+			resp.ArticleCount = 6
+			var a [6]item
+			a[0].Description = `售价仅88元一盒，赶快来看看吧:)`
+			a[0].Title = `清韵诗完美净肤面膜，售价仅88元一盒，赶快来看看吧:)`
+			a[0].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814758-1.jpg"
+			a[0].Url = "http://wd.koudai.com/item.html?itemID=307973157"
+			resp.Articles = append(resp.Articles, &a[0])
+			a[1].Description = `售价仅88元一盒，赶快来看看吧:)`
+			a[1].Title = `清韵诗焕颜靓白面膜，售价仅88元一盒，赶快来看看吧:)`
+			a[1].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814687-1.jpg"
+			a[1].Url = "http://wd.koudai.com/item.html?itemID=307970560"
+			resp.Articles = append(resp.Articles, &a[1])
+			a[2].Description = `售价仅88元一盒，赶快来看看吧:)`
+			a[2].Title = `清韵诗弹力胶原面膜，售价仅88元一盒，赶快来看看吧:)`
+			a[2].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814573-1.jpg"
+			a[2].Url = "http://wd.koudai.com/item.html?itemID=307966427"
+			resp.Articles = append(resp.Articles, &a[2])
+			a[3].Description = `售价仅88元一盒，赶快来看看吧:)`
+			a[3].Title = `清韵诗植物修复面膜，售价仅88元一盒，赶快来看看吧:)`
+			a[3].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814512-1.jpg"
+			a[3].Url = "http://wd.koudai.com/item.html?itemID=307964195"
+			resp.Articles = append(resp.Articles, &a[3])
+			a[4].Description = `售价仅88元一盒，赶快来看看吧:)`
+			a[4].Title = `清韵诗魔法冰瓷面膜，售价仅88元一盒，赶快来看看吧:)`
+			a[4].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814406-1.jpg"
+			a[4].Url = "http://wd.koudai.com/item.html?itemID=307960310"
+			resp.Articles = append(resp.Articles, &a[4])
+			a[5].Description = `售价仅88元一盒，赶快来看看吧:)`
+			a[5].Title = `清韵诗水嫩宝贝面膜，售价仅88元一盒，赶快来看看吧:)`
+			a[5].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814179-1.jpg"
+			a[5].Url = "http://wd.koudai.com/item.html?itemID=307953149"
+			resp.Articles = append(resp.Articles, &a[5])
+
+			resp.FuncFlag = 1
+			return resp, nil
+		}
+
 		strs := strings.Split(req.Content, ".")
 		var resurl string
+		var a item
 		if len(strs) == 1 {
 			resurl = "https://raw.github.com/astaxie/gopkg/master/" + strings.Trim(strings.ToLower(strs[0]), " ") + "/README.md"
 			a.Url = "https://github.com/astaxie/gopkg/tree/master/" + strings.Trim(strings.ToLower(strs[0]), " ") + "/README.md"
