@@ -6,9 +6,8 @@ import (
 )
 
 func main() {
-
-	r := new(controllers.WXMPController)
-	beego.Router("/", r, "get:Get;post:Post")
+	wxmp := new(controllers.WXMPController)
+	beego.Router("/", wxmp, "get:Get;post:Post")
 	beego.HttpPort = 8091
 	beego.Run()
 }
