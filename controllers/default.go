@@ -98,7 +98,7 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 			if strings.HasPrefix(userInputText, `wz`) ||
 				strings.HasPrefix(userInputText, `文章`) ||
 				strings.HasPrefix(userInputText, `article`) {
-				models.Article(req, resp)
+				models.Articles(req, resp)
 				break
 			}
 			resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
