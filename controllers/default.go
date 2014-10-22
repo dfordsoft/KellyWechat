@@ -95,9 +95,8 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 				models.ItemId(req, resp)
 				break
 			}
-			if strings.HasPrefix(userInputText, `wz`) ||
-				strings.HasPrefix(userInputText, `文章`) ||
-				strings.HasPrefix(userInputText, `article`) {
+			matched, err = regexp.MatchString("(wz|article|文章)[0-9]{8,8}", userInputText)
+			if err == nil && matched == true {
 				models.Articles(req, resp)
 				break
 			}
