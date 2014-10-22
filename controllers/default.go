@@ -83,22 +83,20 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 		switch userInputText {
 		case "help", `帮助`:
 			models.Help(req, resp)
-			return resp, nil
 		case "wd", `微店`:
 			models.WeiDian(req, resp)
-			return resp, nil
 		case "mm", `面膜`:
 			models.FacialMask(req, resp)
-			return resp, nil
+		case "nv", "yf", "yifu", `女装`, `衣服`:
+			models.Clothes(req, resp)
 		default:
 			matched, err := regexp.MatchString("[0-9]+", userInputText)
 			if err == nil && matched == true {
 				models.ItemId(req, resp)
-				return resp, nil
+				break
 			}
+			resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
 		}
-
-		resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
 	} else {
 		resp.Content = "暂时还不支持其他的命令类型，请输入help查看说明。"
 	}
