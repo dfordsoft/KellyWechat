@@ -192,46 +192,9 @@ func dealwith(req *Request) (resp *Response, err error) {
 			return resp, nil
 		}
 
-		strs := strings.Split(req.Content, ".")
-		var resurl string
-		var a item
-		if len(strs) == 1 {
-			resurl = "https://raw.github.com/astaxie/gopkg/master/" + strings.Trim(strings.ToLower(strs[0]), " ") + "/README.md"
-			a.Url = "https://github.com/astaxie/gopkg/tree/master/" + strings.Trim(strings.ToLower(strs[0]), " ") + "/README.md"
-		} else {
-			var other []string
-			for k, v := range strs {
-				if k < (len(strs) - 1) {
-					other = append(other, strings.Trim(strings.ToLower(v), " "))
-				} else {
-					other = append(other, strings.Trim(strings.Title(v), " "))
-				}
-			}
-			resurl = "https://raw.github.com/astaxie/gopkg/master/" + strings.Join(other, "/") + ".md"
-			a.Url = "https://github.com/astaxie/gopkg/tree/master/" + strings.Join(other, "/") + ".md"
-		}
-		beego.Info(resurl)
-		rsp, err := http.Get(resurl)
-		if err != nil {
-			resp.Content = "不存在该包内容"
-			return nil, err
-		}
-		defer rsp.Body.Close()
-		if rsp.StatusCode == 404 {
-			resp.Content = "找不到你要查询的包:" + req.Content
-			return resp, nil
-		}
-		resp.MsgType = News
-		resp.ArticleCount = 1
-		body, err := ioutil.ReadAll(rsp.Body)
-		beego.Info(string(body))
-		a.Description = string(body)
-		a.Title = req.Content
-		a.PicUrl = "http://bbs.gocn.im/static/image/common/logo.png"
-		resp.Articles = append(resp.Articles, &a)
-		resp.FuncFlag = 1
+		resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
 	} else {
-		resp.Content = "暂时还不支持其他的类型"
+		resp.Content = "暂时还不支持其他的命令类型，请输入help查看说明。"
 	}
 	return resp, nil
 }
