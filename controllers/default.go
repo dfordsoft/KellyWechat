@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"io/ioutil"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -187,6 +188,19 @@ func dealwith(req *Request) (resp *Response, err error) {
 			a[5].Url = "http://wd.koudai.com/item.html?itemID=307953149"
 			resp.Articles = append(resp.Articles, &a[5])
 
+			resp.FuncFlag = 1
+			return resp, nil
+		}
+		matched, err := regexp.MatchString("[0-9]+", userInputText)
+		if err == nil && matched == true {
+			resp.MsgType = News
+			resp.ArticleCount = 1
+			var a item
+			a.Description = `女装专卖，经典时尚大方，赶快来看看吧:)`
+			a.Title = `凯莉小姐的梦想女装店，经典时尚大方，适合都市年轻女性，赶快来吧:)`
+			a.PicUrl = "http://wd.geilicdn.com/vshop215091300-1413902752.jpg"
+			a.Url = "http://wd.koudai.com/item.html?itemID=" + userInputText
+			resp.Articles = append(resp.Articles, &a)
 			resp.FuncFlag = 1
 			return resp, nil
 		}
