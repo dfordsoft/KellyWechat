@@ -80,22 +80,22 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 	beego.Info(req.Content)
 	if req.MsgType == models.Text {
 		userInputText := strings.Trim(strings.ToLower(req.Content), " ")
-		if userInputText == "help" || userInputText == `帮助` {
+		switch userInputText {
+		case "help", `帮助`:
 			models.Help(req, resp)
 			return resp, nil
-		}
-		if userInputText == "wd" || userInputText == `微店` {
+		case "wd", `微店`:
 			models.WeiDian(req, resp)
 			return resp, nil
-		}
-		if userInputText == "mm" || userInputText == `面膜` {
+		case "mm", `面膜`:
 			models.FacialMask(req, resp)
 			return resp, nil
-		}
-		matched, err := regexp.MatchString("[0-9]+", userInputText)
-		if err == nil && matched == true {
-			models.ItemId(req, resp)
-			return resp, nil
+		default:
+			matched, err := regexp.MatchString("[0-9]+", userInputText)
+			if err == nil && matched == true {
+				models.ItemId(req, resp)
+				return resp, nil
+			}
 		}
 
 		resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
