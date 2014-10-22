@@ -17,11 +17,11 @@ var (
 	TOKEN = "yiiliwechattoken"
 )
 
-type MainController struct {
+type WXMPController struct {
 	beego.Controller
 }
 
-func (this *MainController) Get() {
+func (this *WXMPController) Get() {
 	signature := this.Input().Get("signature")
 	beego.Info("signature:" + signature)
 	timestamp := this.Input().Get("timestamp")
@@ -40,7 +40,7 @@ func (this *MainController) Get() {
 	}
 }
 
-func (this *MainController) Post() {
+func (this *WXMPController) Post() {
 	body, err := ioutil.ReadAll(this.Ctx.Request.Body)
 	if err != nil {
 		beego.Error(err)
