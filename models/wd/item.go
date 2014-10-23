@@ -32,3 +32,10 @@ func (i *WDItem) Get(fields ...string) error {
 	}
 	return nil
 }
+
+func Items() orm.QuerySeter {
+	o := orm.NewOrm()
+
+	qs := o.QueryTable("w_d_item").OrderBy("-Id")
+	return qs
+}

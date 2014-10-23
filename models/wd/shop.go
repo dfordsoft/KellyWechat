@@ -36,3 +36,10 @@ func (s *WDShop) Get(fields ...string) error {
 	}
 	return nil
 }
+
+func Shops() orm.QuerySeter {
+	o := orm.NewOrm()
+
+	qs := o.QueryTable("w_d_shop").OrderBy("-Id")
+	return qs
+}
