@@ -9,16 +9,15 @@ import (
 )
 
 func ItemId(req *Request, resp *Response) error {
-
 	userInputText := strings.Trim(strings.ToLower(req.Content), " ")
-	id, err := strconv.ParseInt(userInputText, 10, 64)
+	uuid, err := strconv.ParseUint(userInputText, 10, 64)
 	if err != nil {
 		beego.Error("incorrect input ", userInputText)
 		return nil
 	}
 	item := &models.WDItem{}
-	item.Id = int(id)
-	if item.Get("id") != nil {
+	item.Uuid = uuid
+	if item.Get("uuid") != nil {
 		beego.Error("not found ", userInputText)
 		return nil
 	}
@@ -26,7 +25,7 @@ func ItemId(req *Request, resp *Response) error {
 	var a WXMPItem
 	resp.MsgType = News
 	resp.ArticleCount = 1
-	a.Description = ``
+	a.Description = `点击查看详细信息哦:)`
 	a.Title = item.Name
 	a.PicUrl = item.Logo
 	a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, item.Uuid)
