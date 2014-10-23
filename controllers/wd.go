@@ -65,13 +65,22 @@ func (this *WDController) SubmitWD() {
 		return
 	}
 
-	if wdShop.Get() != nil {
+	if wdShop.Get("uuid") != nil {
 		endPos := strings.Index(shopInfo.Result.Logo, "?")
 		wdShop.Logo = shopInfo.Result.Logo[:endPos]
 		wdShop.Name = shopInfo.Result.ShopName
 		wdShop.Note = shopInfo.Result.Note
+		beego.Info("do insert shop record")
 		wdShop.Insert()
+	} else {
+		endPos := strings.Index(shopInfo.Result.Logo, "?")
+		wdShop.Logo = shopInfo.Result.Logo[:endPos]
+		wdShop.Name = shopInfo.Result.ShopName
+		wdShop.Note = shopInfo.Result.Note
+		beego.Info("do update shop record")
+		wdShop.Update("id")
 	}
+
 	// get item list
 	// http://wd.koudai.com/wd/item/getIsTopList?param={"userid":215091300,"pageNum":0,"pageSize":49,"isTop":0,"f_seller_id":""}
 
