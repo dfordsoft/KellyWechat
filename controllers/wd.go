@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/missdeer/KellyWechat/models/wd"
@@ -27,8 +28,70 @@ type WDResponseShopInfo struct {
 	Result WDResponseShopResult
 }
 
+type WDResponseItemInfo struct {
+	ItemId   uint64
+	ItemName string
+	Img      string
+	Price    string
+}
+
+type WDResponseItemList struct {
+	Status WDResponseStatus
+	Result []WDResponseItemInfo
+}
+
 type WDController struct {
 	beego.Controller
+}
+
+func (this *WDController) getItemList(wdShop *models.WDShop, url string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		beego.Error("read response error: ", err)
+		this.Data["json"] = map[string]string{"error": "reading item list response error"}
+		this.ServeJson()
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	var itemList WDResponseItemList
+	if err = json.Unmarshal(body, &itemList); err != nil {
+		beego.Error("unmarshalling item list error: ", err)
+		this.Data["json"] = map[string]string{"error": "unmarshalling item list response error"}
+		this.ServeJson()
+		return err
+	}
+	fmt.Println("item list: ", itemList)
+
+	if len(itemList.Result) == 0 {
+		beego.Error("empty item list")
+		return errors.New("empty item list")
+	}
+
+	for _, item := range itemList.Result {
+		wdItem := &models.WDItem{}
+		wdItem.Uuid = item.ItemId
+
+		if wdItem.Get("uuid") != nil {
+			endPos := strings.Index(item.Img, "?")
+			wdItem.Logo = item.Img[:endPos]
+			wdItem.Name = item.ItemName
+			wdItem.Shop = wdShop
+
+			beego.Info("do insert item record")
+			wdItem.Insert()
+		} else {
+			endPos := strings.Index(item.Img, "?")
+			wdItem.Logo = item.Img[:endPos]
+			wdItem.Name = item.ItemName
+			wdItem.Shop = wdShop
+
+			beego.Info("do update item record")
+			wdItem.Update("id")
+		}
+	}
+
+	return nil
 }
 
 func (this *WDController) SubmitWD() {
@@ -40,7 +103,7 @@ func (this *WDController) SubmitWD() {
 	resp, err := http.Get(shopInfoUrl)
 	if err != nil {
 		beego.Error("read response error: ", err)
-		this.Data["json"] = map[string]string{"error": "reading response error"}
+		this.Data["json"] = map[string]string{"error": "reading shop info response error"}
 		this.ServeJson()
 		return
 	}
@@ -83,6 +146,12 @@ func (this *WDController) SubmitWD() {
 
 	// get item list
 	// http://wd.koudai.com/wd/item/getIsTopList?param={"userid":215091300,"pageNum":0,"pageSize":49,"isTop":0,"f_seller_id":""}
+	for i := 0; ; i++ {
+		itemListUrl := fmt.Sprintf(`http://wd.koudai.com/wd/item/getIsTopList?param={"userid":%s,"pageNum":%d,"pageSize":49,"isTop":0,"f_seller_id":""}`, id, i)
+		if err = this.getItemList(wdShop, itemListUrl); err != nil {
+			break
+		}
+	}
 
 	// get item detail
 	// http://wd.koudai.com/wd/item/getPubInfo?param={"itemID":310148677,"page":1}
