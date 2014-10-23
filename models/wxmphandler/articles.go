@@ -3,7 +3,7 @@ package models
 func Articles(req *Request, resp *Response) error {
 	resp.MsgType = News
 	resp.ArticleCount = 6
-	var a [6]Item
+	var a [6]WXMPItem
 	a[0].Description = `售价仅88元一盒，赶快来看看吧:)`
 	a[0].Title = `清韵诗完美净肤面膜，售价仅88元一盒，赶快来看看吧:)`
 	a[0].PicUrl = "http://wd.geilicdn.com/vshop1015143-1413814758-1.jpg"
