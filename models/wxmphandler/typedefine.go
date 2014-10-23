@@ -36,7 +36,7 @@ type Request struct {
 type Response struct {
 	XMLName xml.Name `xml:"xml"`
 	msgBase
-	ArticleCount int     `xml:",omitempty"`
+	ArticleCount int         `xml:",omitempty"`
 	Articles     []*WXMPItem `xml:"Articles>item,omitempty"`
 	FuncFlag     int
 }
