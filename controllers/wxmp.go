@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/missdeer/KellyWechat/models"
+	"github.com/missdeer/KellyWechat/models/wxmphandler"
 	"io/ioutil"
 	"regexp"
 	"sort"
