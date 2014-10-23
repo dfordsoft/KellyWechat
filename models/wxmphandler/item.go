@@ -48,12 +48,13 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 	}
 	a := make([]WXMPItem, arrayLength)
 	rand.Seed(time.Now().UnixNano())
-	for i := 0; i <= 5; i++ {
+	for i := 0; i <= 5 && i < n; i++ {
 		if n > 6 && i >= 5 {
 			resp.ArticleCount = 5
 			break
 		}
-		item := items[rand.Intn(n)]
+		index := rand.Intn(n)
+		item := items[index]
 		a[i].Description = ``
 		a[i].Title = item.Name
 		a[i].PicUrl = item.Logo
