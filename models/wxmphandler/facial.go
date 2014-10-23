@@ -10,7 +10,7 @@ func FacialMask(req *Request, resp *Response) error {
 	shopId, _ := beego.AppConfig.Int("mm_shop_id")
 	qs := models.Items()
 	items := make([]models.WDItem, 10)
-	n, err := qs.Limit(10).Filter("ShopId", shopId).All(&items)
+	n, err := qs.Limit(10).Filter("shop_id", shopId).All(&items)
 	if err != nil || n == 0 {
 		resp.Content = `没开店哦:(`
 		return nil
