@@ -15,3 +15,24 @@ type WDShop struct {
 func Init() {
 	orm.RegisterModel(new(WDShop), new(WDItem))
 }
+
+func (s *WDShop) Insert() error {
+	if _, err := orm.NewOrm().Insert(s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *WDShop) Update(fields ...string) error {
+	if _, err := orm.NewOrm().Update(s, fields...); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *WDShop) Get(fields ...string) error {
+	if err := orm.NewOrm().Read(s, fields...); err != nil {
+		return err
+	}
+	return nil
+}

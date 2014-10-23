@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/missdeer/KellyWechat/models/wd"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type WDResponseStatus struct {
@@ -52,6 +55,22 @@ func (this *WDController) SubmitWD() {
 		this.Data["json"] = map[string]string{"error": "seemly an invalid shop"}
 		this.ServeJson()
 		return
+	}
+	wdShop := &models.WDShop{}
+	wdShop.Uuid, err = strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		beego.Error("read response error: ", err)
+		this.Data["json"] = map[string]string{"error": "reading response error"}
+		this.ServeJson()
+		return
+	}
+
+	if wdShop.Get() != nil {
+		endPos := strings.Index(shopInfo.Result.Logo, "?")
+		wdShop.Logo = shopInfo.Result.Logo[:endPos]
+		wdShop.Name = shopInfo.Result.ShopName
+		wdShop.Note = shopInfo.Result.Note
+		wdShop.Insert()
 	}
 	// get item list
 	// http://wd.koudai.com/wd/item/getIsTopList?param={"userid":215091300,"pageNum":0,"pageSize":49,"isTop":0,"f_seller_id":""}
