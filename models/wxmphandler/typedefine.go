@@ -37,7 +37,7 @@ type Response struct {
 	XMLName xml.Name `xml:"xml"`
 	msgBase
 	ArticleCount int     `xml:",omitempty"`
-	Articles     []*Item `xml:"Articles>item,omitempty"`
+	Articles     []*WXMPItem `xml:"Articles>item,omitempty"`
 	FuncFlag     int
 }
 
@@ -47,7 +47,7 @@ func (resp Response) Encode() (data []byte, err error) {
 	return
 }
 
-type Item struct {
+type WXMPItem struct {
 	XMLName     xml.Name `xml:"item"`
 	Title       string
 	Description string

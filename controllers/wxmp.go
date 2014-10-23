@@ -13,10 +13,6 @@ import (
 	"time"
 )
 
-var (
-	TOKEN = "yiiliwechattoken"
-)
-
 type WXMPController struct {
 	beego.Controller
 }
@@ -109,7 +105,8 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 }
 
 func Signature(timestamp, nonce string) string {
-	strs := sort.StringSlice{TOKEN, timestamp, nonce}
+	wxmpToken := beego.AppConfig.String("wxmp_token")
+	strs := sort.StringSlice{wxmpToken, timestamp, nonce}
 	sort.Strings(strs)
 	str := ""
 	for _, s := range strs {
