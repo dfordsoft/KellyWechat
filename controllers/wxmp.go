@@ -96,7 +96,8 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 				models.Articles(req, resp)
 				break
 			}
-			resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
+			models.SearchItems(req, resp)
+			//resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
 		}
 	} else {
 		resp.Content = "暂时还不支持其他的命令类型，请输入help查看说明。"

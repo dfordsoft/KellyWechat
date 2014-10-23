@@ -36,31 +36,24 @@ func ItemId(req *Request, resp *Response) error {
 	return nil
 }
 
-func itemList(shopId int, req *Request, resp *Response) error {
-	qs := models.Items()
-	var items []models.WDItem
-	rand.Seed(time.Now().UnixNano())
-	n, err := qs.Limit(500).Filter("shop_id", shopId).All(&items)
-	if err != nil || n == 0 {
-		resp.Content = `没开店哦:(`
-		return nil
-	}
-
+func composeItemListReponse(items []models.WDItem, shopId int, req *Request, resp *Response) error {
+	n := len(items)
 	resp.MsgType = News
-	resp.ArticleCount = int(n)
-	arrayLength := int(n)
+	resp.ArticleCount = n
+	arrayLength := n
 	if arrayLength < 5 {
 		arrayLength++
 	} else {
 		arrayLength = 6
 	}
 	a := make([]WXMPItem, arrayLength)
+	rand.Seed(time.Now().UnixNano())
 	for i := 0; i <= 5; i++ {
 		if n > 6 && i >= 5 {
 			resp.ArticleCount = 5
 			break
 		}
-		item := items[rand.Intn(len(items))]
+		item := items[rand.Intn(n)]
 		a[i].Description = ``
 		a[i].Title = item.Name
 		a[i].PicUrl = item.Logo
@@ -68,7 +61,7 @@ func itemList(shopId int, req *Request, resp *Response) error {
 		resp.Articles = append(resp.Articles, &a[i])
 	}
 
-	if n > 6 {
+	if n > 6 && shopId >= 0 {
 		wdShop := &models.WDShop{}
 		wdShop.Id = shopId
 		shopItem := &WXMPItem{}
@@ -83,4 +76,29 @@ func itemList(shopId int, req *Request, resp *Response) error {
 	}
 	resp.FuncFlag = 1
 	return nil
+}
+
+func itemList(shopId int, req *Request, resp *Response) error {
+	qs := models.Items()
+	var items []models.WDItem
+	n, err := qs.Limit(500).Filter("shop_id", shopId).All(&items)
+	if err != nil || n == 0 {
+		resp.Content = `没开这样的店哦:(`
+		return nil
+	}
+
+	return composeItemListReponse(items, shopId, req, resp)
+}
+
+func SearchItems(req *Request, resp *Response) error {
+	userInputText := strings.Trim(strings.ToLower(req.Content), " ")
+	qs := models.Items()
+	var items []models.WDItem
+	n, err := qs.Limit(500).Filter("name__icontains", userInputText).All(&items)
+	if err != nil || n == 0 {
+		resp.Content = `查不到包含关键字“` + userInputText + `”的宝贝哦:(`
+		return nil
+	}
+
+	return composeItemListReponse(items, -1, req, resp)
 }
