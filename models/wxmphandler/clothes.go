@@ -41,16 +41,18 @@ func Clothes(req *Request, resp *Response) error {
 		resp.Articles = append(resp.Articles, &a[i])
 	}
 
-	wdShop := &models.WDShop{}
-	wdShop.Id = shopId
-	shopItem := &WXMPItem{}
-	if wdShop.Get("id") == nil {
-		resp.ArticleCount++
-		shopItem.Description = wdShop.Note
-		shopItem.Title = `宝贝数量较多，请进入微店查看更多 - ` + wdShop.Name
-		shopItem.PicUrl = wdShop.Logo
-		shopItem.Url = fmt.Sprintf(`http://wd.koudai.com/s/%d`, wdShop.Uuid)
-		resp.Articles = append(resp.Articles, shopItem)
+	if n > 6 {
+		wdShop := &models.WDShop{}
+		wdShop.Id = shopId
+		shopItem := &WXMPItem{}
+		if wdShop.Get("id") == nil {
+			resp.ArticleCount++
+			shopItem.Description = wdShop.Note
+			shopItem.Title = `宝贝数量较多，请进入微店查看更多 - ` + wdShop.Name
+			shopItem.PicUrl = wdShop.Logo
+			shopItem.Url = fmt.Sprintf(`http://wd.koudai.com/s/%d`, wdShop.Uuid)
+			resp.Articles = append(resp.Articles, shopItem)
+		}
 	}
 	resp.FuncFlag = 1
 	return nil
