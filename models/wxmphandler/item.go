@@ -15,12 +15,32 @@ func ItemId(req *Request, resp *Response) error {
 	uuid, err := strconv.ParseUint(userInputText, 10, 64)
 	if err != nil {
 		beego.Error("incorrect input ", userInputText)
+		resp.Content = "衣丽已经很努力地在学习了，但仍然不能理解您的需求，请您输入help查看衣丽能懂的一些命令吧:("
 		return nil
 	}
 	item := &models.WDItem{}
 	item.Uuid = uuid
 	if item.Get("uuid") != nil {
 		beego.Error("not found ", userInputText)
+
+		qs := models.Items()
+		var items []models.WDItem
+		n, err := qs.Limit(500).All(&items)
+		if err != nil || n == 0 {
+			resp.Content = fmt.Sprintf("好像找不到编号为%s的宝贝哦:(", userInputText)
+			return nil
+		}
+		wdItem := items[rand.Intn(int(n))]
+
+		var a WXMPItem
+		resp.MsgType = News
+		resp.ArticleCount = 1
+		a.Description = `点击查看详细信息哦:)`
+		a.Title = fmt.Sprintf("好像找不到编号为%s的宝贝哦，随便看点东西吧:) - %s", userInputText, wdItem.Name)
+		a.PicUrl = wdItem.Logo
+		a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, wdItem.Uuid)
+		resp.Articles = append(resp.Articles, &a)
+		resp.FuncFlag = 1
 		return nil
 	}
 
@@ -54,7 +74,7 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 			break
 		}
 		item := items[index]
-		a[i].Description = ``
+		a[i].Description = `点击查看详细信息哦:)`
 		a[i].Title = item.Name
 		a[i].PicUrl = item.Logo
 		a[i].Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, item.Uuid)
