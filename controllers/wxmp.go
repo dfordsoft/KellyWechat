@@ -83,7 +83,7 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 			models.WeiDian(req, resp)
 		case "mm", `面膜`:
 			models.FacialMask(req, resp)
-		case "nv", "yf", "yifu", `女装`, `衣服`:
+		case "nz", "yf", "yifu", `女装`, `衣服`:
 			models.Clothes(req, resp)
 		default:
 			matched, err := regexp.MatchString("[0-9]+", userInputText)
