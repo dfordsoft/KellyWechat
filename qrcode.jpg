@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<script type="text/javascript">
+    //上报测速 --初始点
+    window._points=[+new Date()];
+
+    //上报测速 --js加载完成点,通过编译工具加在seajs.use回调中
+    function wx_main(mod){
+        window._points&&(window._points[3]=+new Date());
+    };
+</script>
+<title>微信公众平台</title>
+<link href="https://res.wx.qq.com/mpres/htmledition/images/favicon20f72a.ico" rel="Shortcut Icon">
+<link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/mpres/htmledition/style/base/layout_head213560.css"/>
+<link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/mpres/htmledition/style/base/base213560.css"/>
+<link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/mpres/htmledition/style/base/lib1ffa7e.css"/>
+
+        <link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/mpres/htmledition/style/page/page_error1ec663.css"/>
+		
+    </head>
+    <body class="zh_CN">
+    	<div class="head" id="header">
+			<script type="text/javascript">
+    //上报测速 --css加载完成点
+    window._points&&(window._points[1]=+new Date());
+</script>
+<div class="head_box">
+    <div class="inner wrp">
+        <h1 class="logo"><a href="/" title="微信公众平台"></a></h1>
+        <div class="account">
+                        <div class="account_meta account_faq" style="display:none;"><a href="http://crm2.qq.com/page/portalpage/wpa.php?uin=40012345&f=1&ty=1&ap=000011:400792:|m:12|f:400792:m:12" target="_blank">在线客服</a></div>
+                    </div>
+    </div>
+</div>
+
+		</div>
+        <div id="body" class="body page_error page_timeout">
+            <div class="container_box">
+                <div class="page_error_msg">
+                    <div class="inner">
+                        <span class="icon_wrp">
+                            <i class="icon_page_error"></i>
+                        </span>
+                        <div class="msg_content">
+                            
+        <h2>登录超时，请重新<a href='/'>登录</a></h2>
+	
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="foot" id="footer">
+	<ul class="links ft">
+					<li class="links_item no_extra"><a href="http://www.tencent.com/zh-cn/index.shtml" target="_blank">关于腾讯</a></li>
+			<li class="links_item"><a href="/cgi-bin/readtemplate?t=home/agreement_tmpl&type=info&lang=zh_CN&token=" target="_blank">服务协议</a></li>
+			<li class="links_item"><a href="/cgi-bin/readtemplate?t=business/faq_operation_tmpl&type=info&lang=zh_CN&token=" target="_blank">运营规范</a></li>
+			<li class="links_item"><a href="http://kf.qq.com/product/weixinmp.html" target="_blank">客服中心</a></li>
+            			<li class="links_item"><a href="http://crm2.qq.com/page/portalpage/wpa.php?uin=40012345&f=1&ty=1&ap=000011:400792:|f:Ggzpt1" target="_blank">在线客服</a></li>
+            			<li class="links_item"><a href="mailto:weixinmp@qq.com" target="_blank">联系邮箱</a></li>
+            			<li class="links_item"><a href="/cgi-bin/readtemplate?t=home/infringement_tmpl&lang=zh_CN" target="_blank">侵权投诉</a></li>
+            				<li class="links_item"><p class="copyright">Copyright &copy; 2012-2014 Tencent. All Rights Reserved.</p> </li>
+	</ul>
+    
+	
+</div>
+<script type="text/javascript">
+    //上报测速 --dom加载完成点
+    window._points&&(window._points[2]=+new Date());
+</script>
+
+	</body>
+
+</html>
+
