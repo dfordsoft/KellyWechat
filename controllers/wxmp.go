@@ -99,7 +99,7 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 			models.SearchItems(req, resp)
 		}
 	} else {
-		resp.Content = "暂时还不支持其他的命令类型，请输入help查看说明。"
+		models.Help(req, resp)
 	}
 	return resp, nil
 }
