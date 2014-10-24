@@ -35,8 +35,8 @@ func ItemId(req *Request, resp *Response) error {
 		var a WXMPItem
 		resp.MsgType = News
 		resp.ArticleCount = 1
-		a.Description = `点击查看详细信息哦:)`
-		a.Title = fmt.Sprintf("好像找不到编号为%s的宝贝哦，随便看点东西吧:) - %s", userInputText, wdItem.Name)
+		a.Description = wdItem.Name + `，点击查看详细信息哦:)`
+		a.Title = fmt.Sprintf("好像找不到编号为%s的宝贝哦，随便看点东西吧:)", userInputText)
 		a.PicUrl = wdItem.Logo
 		a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, wdItem.Uuid)
 		resp.Articles = append(resp.Articles, &a)
@@ -120,7 +120,7 @@ func SearchItems(req *Request, resp *Response) error {
 		var items []models.WDItem
 		n, err := qs.Limit(500).All(&items)
 		if err != nil || n == 0 {
-			resp.Content = fmt.Sprintf("查不到包含关键字“%s”的宝贝哦:(", userInputText)
+			resp.Content = fmt.Sprintf("好像找不到包含关键字“%s”的宝贝哦:(", userInputText)
 			return nil
 		}
 		wdItem := items[rand.Intn(int(n))]
@@ -128,8 +128,8 @@ func SearchItems(req *Request, resp *Response) error {
 		var a WXMPItem
 		resp.MsgType = News
 		resp.ArticleCount = 1
-		a.Description = `点击查看详细信息哦:)`
-		a.Title = fmt.Sprintf("查不到包含关键字“%s”的宝贝哦，随便看点东西吧:) - %s", userInputText, wdItem.Name)
+		a.Description = wdItem.Name + `，点击查看详细信息哦:)`
+		a.Title = fmt.Sprintf("好像找不到包含关键字“%s”的宝贝哦，随便看点东西吧:)", userInputText)
 		a.PicUrl = wdItem.Logo
 		a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, wdItem.Uuid)
 		resp.Articles = append(resp.Articles, &a)
