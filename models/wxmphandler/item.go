@@ -37,7 +37,7 @@ func ItemId(req *Request, resp *Response) error {
 		resp.ArticleCount = 1
 		a.Description = wdItem.Name + `，点击查看详细信息哦:)`
 		a.Title = fmt.Sprintf("好像找不到编号为%s的宝贝哦，随便看点东西吧:)", userInputText)
-		a.PicUrl = wdItem.Logo
+		a.PicUrl = wdItem.Logo + "?w=360&h=0"
 		a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, wdItem.Uuid)
 		resp.Articles = append(resp.Articles, &a)
 		resp.FuncFlag = 1
@@ -49,7 +49,7 @@ func ItemId(req *Request, resp *Response) error {
 	resp.ArticleCount = 1
 	a.Description = `点击查看详细信息哦:)`
 	a.Title = item.Name
-	a.PicUrl = item.Logo
+	a.PicUrl = item.Logo + "?w=360&h=0"
 	a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, item.Uuid)
 	resp.Articles = append(resp.Articles, &a)
 	resp.FuncFlag = 1
@@ -76,7 +76,7 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 		item := items[index]
 		a[i].Description = `点击查看详细信息哦:)`
 		a[i].Title = item.Name
-		a[i].PicUrl = item.Logo
+		a[i].PicUrl = item.Logo + "?w=360&h=0"
 		a[i].Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, item.Uuid)
 		resp.Articles = append(resp.Articles, &a[i])
 	}
@@ -89,7 +89,7 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 			resp.ArticleCount++
 			shopItem.Description = wdShop.Note
 			shopItem.Title = `宝贝数量较多，请进入微店查看更多 - ` + wdShop.Name
-			shopItem.PicUrl = wdShop.Logo
+			shopItem.PicUrl = wdShop.Logo + "?w=360&h=0"
 			shopItem.Url = fmt.Sprintf(`http://wd.koudai.com/s/%d`, wdShop.Uuid)
 			resp.Articles = append(resp.Articles, shopItem)
 		}
@@ -130,7 +130,7 @@ func SearchItems(req *Request, resp *Response) error {
 		resp.ArticleCount = 1
 		a.Description = wdItem.Name + `，点击查看详细信息哦:)`
 		a.Title = fmt.Sprintf("好像找不到包含关键字“%s”的宝贝哦，随便看点东西吧:)", userInputText)
-		a.PicUrl = wdItem.Logo
+		a.PicUrl = wdItem.Logo + "?w=360&h=0"
 		a.Url = fmt.Sprintf(`http://wd.koudai.com/i/%d`, wdItem.Uuid)
 		resp.Articles = append(resp.Articles, &a)
 		resp.FuncFlag = 1
