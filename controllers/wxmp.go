@@ -210,6 +210,8 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 		switch userInputText {
 		case "help", `帮助`:
 			models.Help(req, resp)
+		case "about", `关于`:
+			models.About(req, resp)
 		case "wd", `微店`:
 			models.WeiDian(req, resp)
 		case "mm", `面膜`:
@@ -228,6 +230,21 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 				break
 			}
 			models.SearchItems(req, resp)
+		}
+	} else if req.MsgType == models.Event && req.Event == "CLICK" {
+		switch req.EventKey {
+		case "CMD_LISTSHOPS":
+			models.WeiDian(req, resp)
+		case "CMD_HELP":
+			models.Help(req, resp)
+		case "CMD_ABOUT":
+			models.About(req, resp)
+		case "1015143":
+			models.FacialMask(req, resp)
+		case "215091300":
+			models.Clothes(req, resp)
+		default:
+			// shops
 		}
 	} else {
 		models.Help(req, resp)
