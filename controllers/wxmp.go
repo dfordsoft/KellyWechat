@@ -96,7 +96,7 @@ func (this *WXMPController) SetupMenu() error {
 	}
 
 	if r.Errcode != 0 {
-		beego.Error("setup menu failed: ", r.Errmsg)
+		beego.Error("setup menu failed: ",r.Errcode, r.Errmsg)
 		return errors.New(r.Errmsg)
 	}
 
