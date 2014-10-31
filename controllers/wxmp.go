@@ -1,20 +1,107 @@
 package controllers
 
 import (
+	"bytes"
 	"crypto/sha1"
+	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/missdeer/KellyWechat/models/wxmphandler"
 	"io/ioutil"
+	"net/http"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
 )
 
+var (
+	access_token string
+)
+
+type AccessTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   uint   `json:"expires_in"`
+}
+
 type WXMPController struct {
 	beego.Controller
+}
+
+func (this *WXMPController) UpdateAccessToken() {
+	timer := time.NewTicker(1 * time.Hour)
+	for {
+		select {
+		case <-timer.C:
+			if this.GetAccessToken() != nil {
+				beego.Error("updating access token failed, try again")
+				this.GetAccessToken()
+			}
+		}
+	}
+	timer.Stop()
+}
+
+func (this *WXMPController) GetAccessToken() error {
+	appId := beego.AppConfig.String("appid")
+	appSecret := beego.AppConfig.String("appsecret")
+	url := fmt.Sprintf(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s`, appId, appSecret)
+	resp, err := http.Get(url)
+	if err != nil {
+		beego.Error("read response error: ", err)
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	var atr AccessTokenResponse
+	if err = json.Unmarshal(body, &atr); err != nil {
+		beego.Error("unmarshalling get access token response error: ", err)
+		return err
+	}
+	access_token = atr.AccessToken
+	beego.Info("get access_token: ", access_token)
+	return nil
+}
+
+type SetupMenuResponse struct {
+	Errcode int    `json:"errcode"`
+	Errmsg  string `json:"errmsg"`
+}
+
+func (this *WXMPController) SetupMenu() error {
+	url := fmt.Sprintf(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s`, access_token)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(models.MenuDefine))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		beego.Error("post setup menu command failed: ", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Error("reading setup menu response failed: ", err)
+		return err
+	}
+
+	var r SetupMenuResponse
+	if err = json.Unmarshal(body, &r); err != nil {
+		beego.Error("unmarshalling setup menu response error: ", err)
+		return err
+	}
+
+	if r.Errcode != 0 {
+		beego.Error("setup menu failed: ", r.Errmsg)
+		return errors.New(r.Errmsg)
+	}
+
+	beego.Info("setup menu successfully")
+	return nil
 }
 
 func (this *WXMPController) Get() {

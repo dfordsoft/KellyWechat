@@ -31,6 +31,9 @@ func main() {
 
 	wxmp := new(controllers.WXMPController)
 	beego.Router("/", wxmp, "get:Get;post:Post")
+	wxmp.GetAccessToken()
+	wxmp.SetupMenu()
+	go wxmp.UpdateAccessToken()
 
 	wd := new(controllers.WDController)
 	beego.Router("/wd/add/:id", wd, "post:SubmitWD")
