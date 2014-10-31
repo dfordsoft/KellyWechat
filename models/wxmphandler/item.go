@@ -98,6 +98,21 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 	return nil
 }
 
+func ItemListByShopUuid(uuid string, req *Request, resp *Response) error {
+	wdShop := &models.WDShop{}
+	var err error
+	wdShop.Uuid, err = strconv.ParseUint(uuid, 10, 64)
+	if err != nil {
+		beego.Error("can't convert uuid: ", uuid, err)
+		return err
+	}
+	if err = wdShop.Get("uuid"); err != nil {
+		beego.Error("can't find this shop:", uuid, wdShop)
+		return err
+	}
+	return itemList(wdShop.Id, req, resp)
+}
+
 func itemList(shopId int, req *Request, resp *Response) error {
 	qs := models.Items()
 	var items []models.WDItem

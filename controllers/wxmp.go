@@ -239,12 +239,9 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 			models.Help(req, resp)
 		case "CMD_ABOUT":
 			models.About(req, resp)
-		case "1015143":
-			models.FacialMask(req, resp)
-		case "215091300":
-			models.Clothes(req, resp)
 		default:
 			// shops
+			models.ItemListByShopUuid(req.EventKey, req, resp)
 		}
 	} else {
 		models.Help(req, resp)
