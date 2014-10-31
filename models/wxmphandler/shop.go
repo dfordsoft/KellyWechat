@@ -5,6 +5,44 @@ import (
 	"github.com/missdeer/KellyWechat/models/wd"
 )
 
+func ItemsByShop() []*ButtonItem {
+	var res []*ButtonItem
+	qs := models.Shops()
+	shops := make([]models.WDShop, 4)
+	n, err := qs.Limit(4).All(&shops)
+	if err != nil || n == 0 {
+		return res
+	}
+
+	for _, shop := range shops {
+		s := &ButtonItem{}
+		s.Name = shop.Name
+		s.Type = `click`
+		s.Key = fmt.Sprintf(`%d`, shop.Uuid)
+		res = append(res, s)
+	}
+	return res
+}
+
+func ListWeiDian() []*ButtonItem {
+	var res []*ButtonItem
+	qs := models.Shops()
+	shops := make([]models.WDShop, 4)
+	n, err := qs.Limit(4).All(&shops)
+	if err != nil || n == 0 {
+		return res
+	}
+
+	for _, shop := range shops {
+		s := &ButtonItem{}
+		s.Name = shop.Name
+		s.Type = `view`
+		s.Url = fmt.Sprintf(`http://wd.koudai.com/s/%d`, shop.Uuid)
+		res = append(res, s)
+	}
+	return res
+}
+
 func WeiDian(req *Request, resp *Response) error {
 	qs := models.Shops()
 	shops := make([]models.WDShop, 5)

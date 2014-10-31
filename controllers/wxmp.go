@@ -72,7 +72,51 @@ type SetupMenuResponse struct {
 
 func (this *WXMPController) SetupMenu() error {
 	url := fmt.Sprintf(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s`, access_token)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(models.MenuDefine))
+
+	menuItems := &models.MenuItems{}
+	// click items, list shops, list facial marks, list clothes
+	clickItems := &models.MenuItem{}
+	menuItems.Button = append(menuItems.Button, clickItems)
+	clickItems.Name = `商店`
+	shopsItem := &models.ButtonItem{}
+	shopsItem.Name = `全部`
+	shopsItem.Type = `click`
+	shopsItem.Key = `CMD_LISTSHOPS`
+	clickItems.SubButton = append(clickItems.SubButton, shopsItem)
+	clickItems.SubButton = append(clickItems.SubButton, models.ListWeiDian()...)
+	// view items, open shops
+	viewItems := &models.MenuItem{}
+	menuItems.Button = append(menuItems.Button, viewItems)
+	viewItems.Name = `宝贝`
+	viewItems.SubButton = append(viewItems.SubButton, models.ItemsByShop()...)
+	// other items, help, about, home page
+	otherItems := &models.MenuItem{}
+	menuItems.Button = append(menuItems.Button, otherItems)
+	otherItems.Name = `其他`
+	aboutItem := &models.ButtonItem{}
+	aboutItem.Name = `关于`
+	aboutItem.Type = `click`
+	aboutItem.Key = `CMD_ABOUT`
+	otherItems.SubButton = append(otherItems.SubButton, aboutItem)
+	helpItem := &models.ButtonItem{}
+	helpItem.Name = `帮助`
+	helpItem.Type = `click`
+	helpItem.Key = `CMD_HELP`
+	otherItems.SubButton = append(otherItems.SubButton, helpItem)
+	homepageItem := &models.ButtonItem{}
+	homepageItem.Name = `官方网站`
+	homepageItem.Type = `view`
+	homepageItem.Url = `https://yii.li`
+	otherItems.SubButton = append(otherItems.SubButton, homepageItem)
+
+	menuDefine, err := json.Marshal(menuItems)
+	if err != nil {
+		beego.Error("marshalling menu items failed: ", err)
+		return err
+	}
+	beego.Info("setup menu command: ", string(menuDefine))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(menuDefine))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -96,7 +140,7 @@ func (this *WXMPController) SetupMenu() error {
 	}
 
 	if r.Errcode != 0 {
-		beego.Error("setup menu failed: ",r.Errcode, r.Errmsg)
+		beego.Error("setup menu failed: ", r.Errcode, r.Errmsg)
 		return errors.New(r.Errmsg)
 	}
 
