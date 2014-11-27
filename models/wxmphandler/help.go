@@ -15,11 +15,29 @@ var (
 )
 
 func About(req *Request, resp *Response) error {
-	resp.Content = AboutContent
+	var a WXMPItem
+	resp.MsgType = News
+	resp.ArticleCount = 1
+	a.Description = AboutContent
+	a.Title = `关于衣丽社区微信公众号`
+	a.PicUrl = `https://dn-kelly.qbox.me/upload/img/mc5y9.full.jpg`
+	a.Url = "https://yii.li/post/19"
+	resp.Articles = append(resp.Articles, &a)
+	resp.FuncFlag = 1
+
 	return nil
 }
 
 func Help(req *Request, resp *Response) error {
-	resp.Content = HelpContent
+	var a WXMPItem
+	resp.MsgType = News
+	resp.ArticleCount = 1
+	a.Description = HelpContent
+	a.Title = `衣丽微信公众号使用帮助`
+	a.PicUrl = "https://dn-kelly.qbox.me/upload/img/zb5y9.full.jpg"
+	a.Url = `https://yii.li/post/20`
+	resp.Articles = append(resp.Articles, &a)
+	resp.FuncFlag = 1
+
 	return nil
 }

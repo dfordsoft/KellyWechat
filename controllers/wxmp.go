@@ -163,7 +163,7 @@ func (this *WXMPController) Get() {
 		this.Ctx.WriteString(echostr)
 	} else {
 		beego.Info("signature not matched")
-		this.Ctx.WriteString("")
+		this.Ctx.Redirect(302, "https://yii.li/post/19")
 	}
 }
 
