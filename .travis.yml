@@ -1,10 +1,7 @@
 language: go
 go:
-  - 1.2
   - 1.3
-env:
-  - TRAVIS="yes"
-install:
-  - go get github.com/missdeer/KellyWechat/controllers
+  - 1.4
+  - tip
 script:
-  - go get -u -v && go build -v .
+  - go build -v .
