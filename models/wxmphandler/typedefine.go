@@ -31,6 +31,8 @@ type Request struct {
 	Label                  string
 	PicUrl                 string
 	MsgId                  int
+	Event                  string
+	EventKey               string
 }
 
 type Response struct {

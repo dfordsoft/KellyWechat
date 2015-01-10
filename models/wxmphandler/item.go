@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+const (
+	maxArrayLength int = 10
+)
+
 func ItemId(req *Request, resp *Response) error {
 	userInputText := strings.Trim(strings.ToLower(req.Content), " ")
 	uuid, err := strconv.ParseUint(userInputText, 10, 64)
@@ -61,17 +65,23 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 	resp.MsgType = News
 	resp.ArticleCount = n
 	arrayLength := n
-	if arrayLength < 5 {
+	if arrayLength < maxArrayLength-1 {
 		arrayLength++
 	} else {
-		arrayLength = 6
+		arrayLength = maxArrayLength
 	}
 	a := make([]WXMPItem, arrayLength)
 	rand.Seed(time.Now().UnixNano())
 	for i, index := range rand.Perm(n) {
-		if n > 6 && i >= 5 {
-			resp.ArticleCount = 5
-			break
+		if n > maxArrayLength {
+			if shopId >= 0 && i >= maxArrayLength-1 {
+				resp.ArticleCount = maxArrayLength - 1
+				break
+			}
+			if shopId < 0 && i >= maxArrayLength {
+				resp.ArticleCount = maxArrayLength
+				break
+			}
 		}
 		item := items[index]
 		a[i].Description = `点击查看详细信息哦:)`
@@ -81,7 +91,7 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 		resp.Articles = append(resp.Articles, &a[i])
 	}
 
-	if n > 6 && shopId >= 0 {
+	if n > maxArrayLength && shopId >= 0 {
 		wdShop := &models.WDShop{}
 		wdShop.Id = shopId
 		shopItem := &WXMPItem{}
@@ -96,6 +106,21 @@ func composeItemListReponse(items []models.WDItem, shopId int, req *Request, res
 	}
 	resp.FuncFlag = 1
 	return nil
+}
+
+func ItemListByShopUuid(uuid string, req *Request, resp *Response) error {
+	wdShop := &models.WDShop{}
+	var err error
+	wdShop.Uuid, err = strconv.ParseUint(uuid, 10, 64)
+	if err != nil {
+		beego.Error("can't convert uuid: ", uuid, err)
+		return err
+	}
+	if err = wdShop.Get("uuid"); err != nil {
+		beego.Error("can't find this shop:", uuid, wdShop)
+		return err
+	}
+	return itemList(wdShop.Id, req, resp)
 }
 
 func itemList(shopId int, req *Request, resp *Response) error {

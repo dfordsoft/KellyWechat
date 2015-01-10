@@ -1,20 +1,151 @@
 package controllers
 
 import (
+	"bytes"
 	"crypto/sha1"
+	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/missdeer/KellyWechat/models/wxmphandler"
 	"io/ioutil"
+	"net/http"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
 )
 
+var (
+	access_token string
+)
+
+type AccessTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   uint   `json:"expires_in"`
+}
+
 type WXMPController struct {
 	beego.Controller
+}
+
+func (this *WXMPController) UpdateAccessToken() {
+	timer := time.NewTicker(1 * time.Hour)
+	for {
+		select {
+		case <-timer.C:
+			if this.GetAccessToken() != nil {
+				beego.Error("updating access token failed, try again")
+				this.GetAccessToken()
+			}
+		}
+	}
+	timer.Stop()
+}
+
+func (this *WXMPController) GetAccessToken() error {
+	appId := beego.AppConfig.String("appid")
+	appSecret := beego.AppConfig.String("appsecret")
+	url := fmt.Sprintf(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s`, appId, appSecret)
+	resp, err := http.Get(url)
+	if err != nil {
+		beego.Error("read response error: ", err)
+		return err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	var atr AccessTokenResponse
+	if err = json.Unmarshal(body, &atr); err != nil {
+		beego.Error("unmarshalling get access token response error: ", err)
+		return err
+	}
+	access_token = atr.AccessToken
+	beego.Info("get access_token: ", access_token)
+	return nil
+}
+
+type SetupMenuResponse struct {
+	Errcode int    `json:"errcode"`
+	Errmsg  string `json:"errmsg"`
+}
+
+func (this *WXMPController) SetupMenu() error {
+	url := fmt.Sprintf(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s`, access_token)
+
+	menuItems := &models.MenuItems{}
+	// click items, list shops, list facial marks, list clothes
+	clickItems := &models.MenuItem{}
+	menuItems.Button = append(menuItems.Button, clickItems)
+	clickItems.Name = `商店`
+	shopsItem := &models.ButtonItem{}
+	shopsItem.Name = `全部`
+	shopsItem.Type = `click`
+	shopsItem.Key = `CMD_LISTSHOPS`
+	clickItems.SubButton = append(clickItems.SubButton, shopsItem)
+	clickItems.SubButton = append(clickItems.SubButton, models.ListWeiDian()...)
+	// view items, open shops
+	viewItems := &models.MenuItem{}
+	menuItems.Button = append(menuItems.Button, viewItems)
+	viewItems.Name = `宝贝`
+	viewItems.SubButton = append(viewItems.SubButton, models.ItemsByShop()...)
+	// other items, help, about, home page
+	otherItems := &models.MenuItem{}
+	menuItems.Button = append(menuItems.Button, otherItems)
+	otherItems.Name = `其他`
+	aboutItem := &models.ButtonItem{}
+	aboutItem.Name = `关于`
+	aboutItem.Type = `click`
+	aboutItem.Key = `CMD_ABOUT`
+	otherItems.SubButton = append(otherItems.SubButton, aboutItem)
+	helpItem := &models.ButtonItem{}
+	helpItem.Name = `帮助`
+	helpItem.Type = `click`
+	helpItem.Key = `CMD_HELP`
+	otherItems.SubButton = append(otherItems.SubButton, helpItem)
+	homepageItem := &models.ButtonItem{}
+	homepageItem.Name = `官方网站`
+	homepageItem.Type = `view`
+	homepageItem.Url = `https://yii.li`
+	otherItems.SubButton = append(otherItems.SubButton, homepageItem)
+
+	menuDefine, err := json.Marshal(menuItems)
+	if err != nil {
+		beego.Error("marshalling menu items failed: ", err)
+		return err
+	}
+	beego.Info("setup menu command: ", string(menuDefine))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(menuDefine))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		beego.Error("post setup menu command failed: ", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Error("reading setup menu response failed: ", err)
+		return err
+	}
+
+	var r SetupMenuResponse
+	if err = json.Unmarshal(body, &r); err != nil {
+		beego.Error("unmarshalling setup menu response error: ", err)
+		return err
+	}
+
+	if r.Errcode != 0 {
+		beego.Error("setup menu failed: ", r.Errcode, r.Errmsg)
+		return errors.New(r.Errmsg)
+	}
+
+	beego.Info("setup menu successfully")
+	return nil
 }
 
 func (this *WXMPController) Get() {
@@ -32,7 +163,7 @@ func (this *WXMPController) Get() {
 		this.Ctx.WriteString(echostr)
 	} else {
 		beego.Info("signature not matched")
-		this.Ctx.WriteString("")
+		this.Ctx.Redirect(302, "https://yii.li/post/19")
 	}
 }
 
@@ -79,6 +210,8 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 		switch userInputText {
 		case "help", `帮助`:
 			models.Help(req, resp)
+		case "about", `关于`:
+			models.About(req, resp)
 		case "wd", `微店`:
 			models.WeiDian(req, resp)
 		case "mm", `面膜`:
@@ -97,6 +230,18 @@ func dealwith(req *models.Request) (resp *models.Response, err error) {
 				break
 			}
 			models.SearchItems(req, resp)
+		}
+	} else if req.MsgType == models.Event && req.Event == "CLICK" {
+		switch req.EventKey {
+		case "CMD_LISTSHOPS":
+			models.WeiDian(req, resp)
+		case "CMD_HELP":
+			models.Help(req, resp)
+		case "CMD_ABOUT":
+			models.About(req, resp)
+		default:
+			// shops
+			models.ItemListByShopUuid(req.EventKey, req, resp)
 		}
 	} else {
 		models.Help(req, resp)
