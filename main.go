@@ -43,6 +43,6 @@ func main() {
 
 	beego.Router("/article/add", wxmp, "post:Post")
 
-	beego.HttpPort, _ = beego.AppConfig.Int("http_port")
+	beego.BConfig.Listen.HTTPPort, _ = beego.AppConfig.Int("http_port")
 	beego.Run()
 }

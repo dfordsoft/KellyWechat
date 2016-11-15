@@ -49,7 +49,7 @@ func (this *WDController) getItemList(wdShop *models.WDShop, url string) error {
 	if err != nil {
 		beego.Error("read response error: ", err)
 		this.Data["json"] = map[string]string{"error": "reading item list response error"}
-		this.ServeJson()
+		this.ServeJSON()
 		return err
 	}
 	defer resp.Body.Close()
@@ -58,7 +58,7 @@ func (this *WDController) getItemList(wdShop *models.WDShop, url string) error {
 	if err = json.Unmarshal(body, &itemList); err != nil {
 		beego.Error("unmarshalling item list error: ", err)
 		this.Data["json"] = map[string]string{"error": "unmarshalling item list response error"}
-		this.ServeJson()
+		this.ServeJSON()
 		return err
 	}
 	fmt.Println("item list: ", itemList)
@@ -104,7 +104,7 @@ func (this *WDController) SubmitWD() {
 	if err != nil {
 		beego.Error("read response error: ", err)
 		this.Data["json"] = map[string]string{"error": "reading shop info response error"}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 	defer resp.Body.Close()
@@ -116,7 +116,7 @@ func (this *WDController) SubmitWD() {
 		len(shopInfo.Result.ShopName) == 0 ||
 		len(shopInfo.Result.Logo) == 0 {
 		this.Data["json"] = map[string]string{"error": "seemly an invalid shop"}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 	wdShop := &models.WDShop{}
@@ -124,7 +124,7 @@ func (this *WDController) SubmitWD() {
 	if err != nil {
 		beego.Error("read response error: ", err)
 		this.Data["json"] = map[string]string{"error": "reading response error"}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 
@@ -157,5 +157,5 @@ func (this *WDController) SubmitWD() {
 	// http://wd.koudai.com/wd/item/getPubInfo?param={"itemID":310148677,"page":1}
 
 	this.Data["json"] = map[string]string{"ok": "200"}
-	this.ServeJson()
+	this.ServeJSON()
 }
